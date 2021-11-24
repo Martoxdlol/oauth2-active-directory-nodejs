@@ -1,5 +1,5 @@
 const session = require('express-session')
-const redis = require('redis')
+const { callback_client } = require('./redis')
 
 /*
 
@@ -9,11 +9,10 @@ We are using express-session with redis to store session data
 
 function createAndSetSession(app) {
     let RedisStore = require('connect-redis')(session)
-    let redisClient = redis.createClient()
 
     app.use(
         session({
-            store: new RedisStore({ client: redisClient }),
+            store: new RedisStore({ client: callback_client }),
             saveUninitialized: false,
             secret: 'keyboard cat',
             resave: false,

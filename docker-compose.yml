@@ -11,4 +11,20 @@ services:
       - AUTH_SERVER_HOST=auth.yourserver.com
       # access_token duration in seconds, 0 equals Infinity
       - ACCESS_TOKEN_DURATION=0
-      
+      - RESET_PASSWORD_LINK_DURATION=0
+
+      - LDAP_SERVER_HOST="ldap://ad.server.example.com"
+      - LDAP_SEARCH_BASE_DN="CN=Users,DC=ad,DC=server,DC=example,DC=com"
+      # Used for admin auth on activedirectory to auth users
+      - LDAP_BIND_DN="CN=bind_user,CN=Users,DC=ad,DC=server,DC=example,DC=com"
+      # Used for admin auth on activedirectory to reset passwords
+      - LDAP_BIND_USERNAME="bind_user@ad.server.example.com"
+      - LDAP_BIND_PW="bind_user password"
+      - USERNAME_ATTRIBUTE="sAMAccountName"
+
+      - SMTP_HOST="mail.stmp-sever.example"
+      - SMTP_PORT=465
+      - SMTP_SECURE=true or false
+      - SMTP_USERNAME=Emai user
+      - SMTP_PASSWORD=Email user password
+      - SMTP_EMAIL_FROM='"Sender Name" <sender@email.address>'

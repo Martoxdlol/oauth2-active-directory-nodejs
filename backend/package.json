@@ -11,13 +11,18 @@
   "dependencies": {
     "activedirectory": "^0.7.2",
     "ad": "^0.3.2",
+    "async-redis": "^2.0.0",
     "body-parser": "^1.19.0",
     "connect-redis": "^6.0.0",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^10.0.0",
+    "email-validator": "^2.0.4",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "ldap-authentication": "^2.2.9",
     "ldapjs-promise": "^1.0.6",
     "mongoose": "^6.0.13",
+    "nodemailer": "^6.7.1",
     "redis": "^3.1.2",
     "uuidv4": "^6.2.12"
   },

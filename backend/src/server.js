@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '../dev.env' })
+
 const express = require("express")
 const path = require('path')
 const apiRouter = require("./api/api")
@@ -8,9 +10,14 @@ const createAndSetSession = require("./session")
 const prod = process.env.NODE_ENV == 'production'
 const WORKDIR_PATH = process.env.WORKDIR_PATH
 
+
 // Use only on development
-if(!prod && !process.env.AUTH_SERVER_HOST) process.env.AUTH_SERVER_HOST = 'localhost'
-if(!prod && !process.env.ALLOW_KEEP_LOGGED_USERS) process.env.ALLOW_KEEP_LOGGED_USERS = 'true'
+if (!prod && !process.env.AUTH_SERVER_HOST) process.env.AUTH_SERVER_HOST = 'localhost:8080'
+if (!prod && !process.env.ALLOW_KEEP_LOGGED_USERS) process.env.ALLOW_KEEP_LOGGED_USERS = 'true'
+if (!process.env.REDIS_PREFIX) process.env.REDIS_PREFIX = ''
+if (!process.env.ACCESS_TOKEN_DURATION) process.env.ACCESS_TOKEN_DURATION = 10 * 60
+if (!process.env.RESET_PASSWORD_LINK_DURATION) process.env.RESET_PASSWORD_LINK_DURATION = 10 * 60
+
 
 async function main() {
     console.log("Starting auth server...");
@@ -30,15 +37,15 @@ async function main() {
     createAndSetSession(app)
 
     // users api entries
-    app.get("/api", apiRouter)
+    app.use("/api", apiRouter)
 
     // oauth2 entries
-    app.get("/oauth2", oauth2Router)
+    app.use("/oauth2", oauth2Router)
 
     // Dev tool to check where is running
     app.get("/node_env", (req, res) => res.send(process.env.NODE_ENV + " " + process.env.WORKDIR_PATH))
-    
-    if(prod) {
+
+    if (prod) {
         // If is production use builded files
         app.use(express.static(path.join(WORKDIR_PATH, 'auth-app/build')))
     } else {
