@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  auth-server:
+    build: .
+    container_name: auth-server
+    ports:
+      - '8080:8080'
+    environment:
+      # mongo db database for keeping clients keys and access_tokens
+      - MONGO_URI=mongodb://localhost:27017/auth-server
+      - AUTH_SERVER_HOST=auth.yourserver.com
+      # access_token duration in seconds, 0 equals Infinity
+      - ACCESS_TOKEN_DURATION=0
+      

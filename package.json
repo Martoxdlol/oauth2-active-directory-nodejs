@@ -1,0 +1,23 @@
+{
+  "name": "auth-server2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install": "cd backend && npm install && cd ../auth-app && npm install",
+    "start:dev": "cross-env NODE_ENV=development npm-run-all -p dev:*",
+    "dev:backend": "cd backend && nodemon src/server.js",
+    "dev:app": "cd auth-app && npm run start",
+    "build": "cd auth-app && npm run build",
+    "start:prod": "cross-env NODE_ENV=development npm-run-all -p dev:*",
+    "prod:backend": "cd backend && nodemon src/server.js",
+    "prod:app": "cd auth-app && npm run start"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.15",
+    "npm-run-all": "^4.1.5"
+  }
+}
