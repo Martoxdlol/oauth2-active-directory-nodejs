@@ -18,6 +18,9 @@ if (!process.env.REDIS_PREFIX) process.env.REDIS_PREFIX = ''
 if (!process.env.ACCESS_TOKEN_DURATION) process.env.ACCESS_TOKEN_DURATION = 10 * 60
 if (!process.env.RESET_PASSWORD_LINK_DURATION) process.env.RESET_PASSWORD_LINK_DURATION = 10 * 60
 
+console.log("************************* ENV *************************")
+console.log(process.env)
+console.log("*******************************************************")
 
 async function main() {
     console.log("Starting auth server...");
