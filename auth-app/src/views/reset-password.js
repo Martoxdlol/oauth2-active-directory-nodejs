@@ -16,7 +16,7 @@ export default function ResetPassword(props) {
 
     async function handleSubmitSendCode(e) {
         e.preventDefault()
-        if(loading) return
+        if (loading) return
         setErrorMessage()
         setLoading(true)
         try {
@@ -34,7 +34,7 @@ export default function ResetPassword(props) {
 
     async function handleSubmit(e) {
         e.preventDefault()
-        if(loading) return
+        if (loading) return
         setLoading(true)
         setErrorMessage()
         if (password != passwordConf) {
@@ -100,6 +100,7 @@ export default function ResetPassword(props) {
 
     return <div>
         <img src={ethf_img} />
+        <p>Recibirás un email con un link al cual tendrás que acceder para cambiar tu contraseña.</p>
         <form onSubmit={handleSubmitSendCode}>
             {errorMessage && <p className="error message">{errorMessage}</p>}
             <label className="floating-label" htmlFor="username">Nombre de usuario</label>
