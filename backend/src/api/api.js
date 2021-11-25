@@ -113,6 +113,7 @@ apiRouter.post('/account/reset-password', async (req, res) => {
                 ok = true
             } catch (error) {
                 console.error("Changeing password try " + (i + 1) + " failed.")
+                await delay(1200)
                 if (i == 9) {
                     throw error
                 }
@@ -130,5 +131,11 @@ apiRouter.post('/account/reset-password', async (req, res) => {
         console.log(error)
     }
 })
+
+function delay(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {resolve()}, ms)
+    })
+}
 
 module.exports = apiRouter
