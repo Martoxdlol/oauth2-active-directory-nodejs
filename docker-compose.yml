@@ -8,6 +8,7 @@ services:
     environment:
       # mongo db database for keeping clients keys and access_tokens
       - MONGO_URI=mongodb://localhost:27017/auth-server
+      - REDIS_URL=redis://alice:foobared@awesome.redis.server:6380
       - AUTH_SERVER_HOST=auth.yourserver.com
       # access_token duration in seconds, 0 equals Infinity
       - ACCESS_TOKEN_DURATION=0
