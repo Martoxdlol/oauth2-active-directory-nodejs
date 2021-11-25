@@ -39,6 +39,7 @@ export default function ResetPassword(props) {
         setErrorMessage()
         if (password != passwordConf) {
             setErrorMessage("Las contraseñas no coinciden")
+            setLoading(false)
             return
         }
         try {

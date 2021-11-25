@@ -6,6 +6,8 @@ const { make_secure_secret, make_id, make_short_id } = require('../util/generate
 const { anyToString } = require('../util/aux_functions')
 
 const validator = require("email-validator")
+const modifyPassword = require('../ldap/modifyPassword')
+const findUser = require('../ldap/findUser')
 
 const apiRouter = express.Router()
 
@@ -15,6 +17,13 @@ const ad = new AD({
     user: process.env.LDAP_BIND_USERNAME,
     pass: process.env.LDAP_BIND_PW
 })
+
+const ad2 = new AD({
+    url: process.env.SECOND_LDAP_SERVER_HOST,
+    user: process.env.SECOND_LDAP_BIND_USERNAME,
+    pass: process.env.SECOND_LDAP_BIND_PW
+})
+
 
 apiRouter.post('/account/request-reset-password', async (req, res) => {
     let username = anyToString(req.body.username)
@@ -76,7 +85,7 @@ apiRouter.post('/account/reset-password', async (req, res) => {
         }
 
         // Find user correct username
-        const user = await ad.user(username).get()
+        const user = await findUser(username, process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
         if (!user) {
             res.status(403).json('user not found')
             return
@@ -102,24 +111,57 @@ apiRouter.post('/account/reset-password', async (req, res) => {
             return
         }
 
-        console.log("Changing password to", username)
+        console.log("[SERVER 1] Changing password to", username, user.dn)
 
-        // Change the actual password
-        let ok = false
-        let i = 0
-        while (!ok) {
-            try {
-                await ad.user(username).password(password)
-                ok = true
-            } catch (error) {
-                console.error("Changeing password try " + (i + 1) + " failed.")
-                await delay(1200)
-                if (i == 9) {
-                    throw error
-                }
-            }
-            i++;
+
+        const r1 = await modifyPassword(user.dn, password, process.env.LDAP_SERVER_HOST, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
+        console.log("[SERVER 1]", r1)
+
+        const user2 = await findUser(username, process.env.SECOND_LDAP_SERVER_HOST, process.env.SECOND_LDAP_SEARCH_BASE_DN, process.env.SECOND_LDAP_BIND_USERNAME, process.env.SECOND_LDAP_BIND_PW)
+        if (user2) {
+            console.log("[SERVER 2] Changing password to", username, user2.dn)
+            const r2 = await modifyPassword(user2.dn, password, process.env.SECOND_LDAP_SERVER_HOST, process.env.SECOND_LDAP_BIND_USERNAME, process.env.SECOND_LDAP_BIND_PW)
+            console.log("[SERVER 2]", r2)
         }
+
+        // modifyPassword()
+        // Change the actual password
+        // let ok = false
+        // let i = 0
+        // while (!ok) {
+        //     try {
+        //         await ad.user(username).password(password)
+        //         ok = true
+        //     } catch (error) {
+        //         console.error("[Server 1] Changeing password try " + (i + 1) + " failed.")
+        //         await delay(1200)
+        //         if (i == 9) {
+        //             throw error
+        //         }
+        //     }
+        //     i++;
+        // }
+
+        // console.log("Password changed to", username)
+
+        // ok = false
+        // i = 0
+        // while (!ok) {
+        //     try {
+        //         console.log("Trying to change password on second server")
+        //         await ad2.user(username).password(password)
+        //         ok = true
+        //     } catch (error) {
+        //         console.error("[Server 2] Changeing password try " + (i + 1) + " failed.")
+        //         await delay(1200)
+        //         if (i == 9) {
+        //             throw error
+        //         }
+        //     }
+        //     i++;
+        // }
+
+        // console.log("Password changed on second server to", username)
 
         // Delete code
         await redisClient.DEL('password_reset_code:' + code)
@@ -128,13 +170,13 @@ apiRouter.post('/account/reset-password', async (req, res) => {
         res.json('ok')
     } catch (error) {
         res.status(500).json("internal_error")
-        console.log(error)
+        console.error(error)
     }
 })
 
 function delay(ms) {
     return new Promise((resolve, reject) => {
-        setTimeout(() => {resolve()}, ms)
+        setTimeout(() => { resolve() }, ms)
     })
 }
 
