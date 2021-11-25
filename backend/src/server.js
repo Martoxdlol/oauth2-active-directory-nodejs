@@ -55,6 +55,7 @@ async function main() {
     if (prod) {
         // If is production use builded files
         app.use(express.static(path.join(WORKDIR_PATH, 'auth-app/build')))
+        app.get('*', res.sendFile(path.join(WORKDIR_PATH, 'auth-app/build/index.html')))
     } else {
         // If is development use react dev server
         const { createProxyMiddleware } = require('http-proxy-middleware')
