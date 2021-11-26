@@ -33,15 +33,17 @@ function modifyPassword(userDN, newPassword, server, bindUserDN, bindUserPasswor
     })
 }
 
-function encodePassword(str) {
-    var output = '';
-    str = '"' + str + '"';
-
-    for (var i = 0; i < str.length; i++) {
-        output += String.fromCharCode(str.charCodeAt(i) & 0xFF, (str.charCodeAt(i) >>> 8) & 0xFF);
-    }
-
-    return output;
+function encodePassword(password) {
+    return new Buffer('"' + password + '"', 'utf16le').toString();
 }
+/*
+function encodePassword(password) {
+    let newPassword = '';
+    password = "\"" + password + "\"";
+    for (let i = 0; i < password.length; i++) {
+        newPassword += String.fromCharCode(password.charCodeAt(i) & 0xFF, (password.charCodeAt(i) >>> 8) & 0xFF);
+    }
+    return newPassword;
+}*/
 
 module.exports = modifyPassword
