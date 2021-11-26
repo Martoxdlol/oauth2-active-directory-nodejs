@@ -74,7 +74,7 @@ apiRouter.post('/account/request-reset-password', async (req, res) => {
 })
 
 apiRouter.post('/account/reset-password', async (req, res) => {
-    let username = anyToString(req.body.username)
+    let username = anyToString(req.body.username).trim()
     const password = anyToString(req.body.password)
     const code = anyToString(req.query.code)
     try {
@@ -102,7 +102,7 @@ apiRouter.post('/account/reset-password', async (req, res) => {
             r_username = username
             codeByPassed = true
             console.log(new RegExp(process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX))
-            if (process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX && !(new RegExp(process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX)).test(username)) {
+            if (process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX && !((new RegExp(process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX)).test(username))) {
                 console.log("Bypass password change to user: ", username, "CANCELLED")
                 r_username = null
                 codeByPassed = false
@@ -147,8 +147,8 @@ apiRouter.post('/account/reset-password', async (req, res) => {
             await sendMail({
                 to: process.env.NOTIFY_CHANGES_TO,
                 subject: 'SE CAMBIO LA CONTRASEÑA DE ' + username,
-                text: 'EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.' + extra,
-                html: '<p>EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.</p>' + extra,
+                text: 'EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.' + extra + ' \n\n' + JSON.stringify(user) + '\n\n' + JSON.stringify(user2),
+                html: '<p>EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.</p>' + '<p>' + extra + '</p>' + '<p>' + JSON.stringify(user) + '</p>' + '<p>' + JSON.stringify(user2) + '</p>',
             })
         }
 
