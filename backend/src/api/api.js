@@ -92,7 +92,22 @@ apiRouter.post('/account/reset-password', async (req, res) => {
         }
 
         username = user.sAMAccountName
-        const r_username = await redisClient.GET('password_reset_code:' + code)
+
+        let r_username = await redisClient.GET('password_reset_code:' + code)
+
+        // Bypass code, use fixed code. VERY INSECURE. DON'T USE IT ¡¡¡¡
+        let codeByPassed = false
+        if (!r_username && process.env.CHANHE_PASSWORD_BYPASS_CODE && code === process.env.CHANHE_PASSWORD_BYPASS_CODE) {
+            console.log("Bypass password change to user: ", username)
+            r_username = username
+            codeByPassed = true
+            console.log(new RegExp(process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX))
+            if (process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX && !(new RegExp(process.env.CHANHE_PASSWORD_BYPASS_USER_REGEX)).test(username)) {
+                console.log("Bypass password change to user: ", username, "CANCELLED")
+                r_username = null
+                codeByPassed = false
+            }
+        }
 
         // Verify username
         if (!r_username) {
@@ -124,47 +139,21 @@ apiRouter.post('/account/reset-password', async (req, res) => {
             console.log("[SERVER 2]", r2)
         }
 
-        // modifyPassword()
-        // Change the actual password
-        // let ok = false
-        // let i = 0
-        // while (!ok) {
-        //     try {
-        //         await ad.user(username).password(password)
-        //         ok = true
-        //     } catch (error) {
-        //         console.error("[Server 1] Changeing password try " + (i + 1) + " failed.")
-        //         await delay(1200)
-        //         if (i == 9) {
-        //             throw error
-        //         }
-        //     }
-        //     i++;
-        // }
-
-        // console.log("Password changed to", username)
-
-        // ok = false
-        // i = 0
-        // while (!ok) {
-        //     try {
-        //         console.log("Trying to change password on second server")
-        //         await ad2.user(username).password(password)
-        //         ok = true
-        //     } catch (error) {
-        //         console.error("[Server 2] Changeing password try " + (i + 1) + " failed.")
-        //         await delay(1200)
-        //         if (i == 9) {
-        //             throw error
-        //         }
-        //     }
-        //     i++;
-        // }
-
-        // console.log("Password changed on second server to", username)
+        if (process.env.NOTIFY_CHANGES_TO) {
+            let extra = ''
+            if (codeByPassed) {
+                extra = ' Utilizando código administratibo (bypass). '
+            }
+            await sendMail({
+                to: process.env.NOTIFY_CHANGES_TO,
+                subject: 'SE CAMBIO LA CONTRASEÑA DE ' + username,
+                text: 'EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.' + extra,
+                html: '<p>EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.</p>' + extra,
+            })
+        }
 
         // Delete code
-        await redisClient.DEL('password_reset_code:' + code)
+        if (!codeByPassed) await redisClient.DEL('password_reset_code:' + code)
 
         // Send ok
         res.json('ok')
