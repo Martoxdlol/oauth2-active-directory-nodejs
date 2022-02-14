@@ -133,8 +133,8 @@ apiRouter.post('/account/reset-password', async (req, res) => {
             await sendMail({
                 to: process.env.NOTIFY_CHANGES_TO,
                 subject: 'SE CAMBIO LA CONTRASEÑA DE ' + username,
-                text: 'EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.' + extra + ' \n\n' + JSON.stringify(user) + '\n\n' + JSON.stringify(user2),
-                html: '<p>EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.</p>' + '<p>' + extra + '</p>' + '<p>' + JSON.stringify(user) + '</p>' + '<p>' + JSON.stringify(user2) + '</p>',
+                text: 'EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.' + extra + ' \n\n' + JSON.stringify(user) + '\n\n',
+                html: '<p>EL USUARIO ' + username + ' CAMBIO LA CONTRASEÑA EL ' + (new Date()).toString() + '.</p>' + '<p>' + extra + '</p>',
             })
         }
 
