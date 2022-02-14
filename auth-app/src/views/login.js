@@ -16,7 +16,7 @@ export default function Login(props) {
                     key
                 }
             })
-            console.log(response.data)
+            window.location.href = response.data
         } catch (error) {
             if(error.response) console.log(error.response.data)
             alert("ERR")

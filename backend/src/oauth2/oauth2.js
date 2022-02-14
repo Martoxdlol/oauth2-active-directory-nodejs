@@ -110,7 +110,9 @@ oauth2Router.post('/login/api/login', async (req, res) => {
             req.session.login_attempt = null
 
             // location.href = redirect_uri?code=code
-            res.json(code)
+            const u = new URL(req.session.login_attempt.redirect_uri)
+            u.searchParams.set("code", code)
+            res.json(u.toString())
         } else {
             res.status(402).json("unauthorized")
         }
