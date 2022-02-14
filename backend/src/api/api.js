@@ -18,13 +18,6 @@ const ad = new AD({
     pass: process.env.LDAP_BIND_PW
 })
 
-const ad2 = new AD({
-    url: process.env.SECOND_LDAP_SERVER_HOST,
-    user: process.env.SECOND_LDAP_BIND_USERNAME,
-    pass: process.env.SECOND_LDAP_BIND_PW
-})
-
-
 apiRouter.post('/account/request-reset-password', async (req, res) => {
     let username = anyToString(req.body.username)
     const email = anyToString(req.body.email)
@@ -132,17 +125,10 @@ apiRouter.post('/account/reset-password', async (req, res) => {
         const r1 = await modifyPassword(user.dn, password, process.env.LDAP_SERVER_HOST, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
         console.log("[SERVER 1]", r1)
 
-        const user2 = await findUser(username, process.env.SECOND_LDAP_SERVER_HOST, process.env.SECOND_LDAP_SEARCH_BASE_DN, process.env.SECOND_LDAP_BIND_USERNAME, process.env.SECOND_LDAP_BIND_PW)
-        if (user2) {
-            console.log("[SERVER 2] Changing password to", username, user2.dn)
-            const r2 = await modifyPassword(user2.dn, password, process.env.SECOND_LDAP_SERVER_HOST, process.env.SECOND_LDAP_BIND_USERNAME, process.env.SECOND_LDAP_BIND_PW)
-            console.log("[SERVER 2]", r2)
-        }
-
         if (process.env.NOTIFY_CHANGES_TO) {
             let extra = ''
             if (codeByPassed) {
-                extra = ' Utilizando código administratibo (bypass). '
+                extra = ' Utilizando código administrativo (bypass). '
             }
             await sendMail({
                 to: process.env.NOTIFY_CHANGES_TO,
