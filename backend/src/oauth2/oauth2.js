@@ -152,6 +152,7 @@ oauth2Router.post('/login/access_token', async (req, res) => {
         await redisClient.DEL(process.env.REDIS_PREFIX + 'temporal_code:' + code)
         res.json({ access_token: accessToken.access_token })
     } catch (error) {
+        console.log(error)
         res.status(403).json('forbidden')
     }
 })
