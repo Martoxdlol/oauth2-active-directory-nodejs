@@ -106,11 +106,14 @@ oauth2Router.post('/login/api/login', async (req, res) => {
             await redisClient.SET(key, accessToken._id.toString())
             await redisClient.EXPIRE(key, process.env.ACCESS_TOKEN_DURATION)
 
+            // Save redirect_uri
+            const r_uri = req.session.login_attempt.redirect_uri
+
             // Delete login attempt
             req.session.login_attempt = null
 
             // location.href = redirect_uri?code=code
-            const u = new URL(req.session.login_attempt.redirect_uri)
+            const u = new URL(r_uri)
             u.searchParams.set("code", code)
             res.json(u.toString())
         } else {

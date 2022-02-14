@@ -7,9 +7,11 @@ export default function Login(props) {
     const key = (new URL(window.location.href)).searchParams.get('key')
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
 
     async function handleSubmit(e) {
         e.preventDefault()
+        setLoading(true)
         try {
             const response = await axios.post('/oauth2/login/api/login', { username, password }, {
                 params: {
@@ -19,7 +21,8 @@ export default function Login(props) {
             window.location.href = response.data
         } catch (error) {
             if(error.response) console.log(error.response.data)
-            alert("ERR")
+            alert("Error al iniciar sesión")
+            setLoading(false)
         }
 
     }
@@ -31,7 +34,7 @@ export default function Login(props) {
             <input type="text" name="username" id="username" value={username} onChange={e => setUsername(e.target.value)} />            
             <label class="floating-label" htmlFor="password">Contraseña</label>
             <input type="password" name="password" id="password" value={password} onChange={e => setPassword(e.target.value)} />
-            <input type="submit" value="Continuar" />
+            <input type="submit" value="Continuar" disabled={loading}/>
         </form>
         <div id="actions">
             <Link className='big-link' to='/reset-password'>Cambiar contraseña</Link>
