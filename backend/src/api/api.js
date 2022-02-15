@@ -8,6 +8,7 @@ const { anyToString } = require('../util/aux_functions')
 const validator = require("email-validator")
 const modifyPassword = require('../ldap/modifyPassword')
 const findUser = require('../ldap/findUser')
+const AccessToken = require('../models/access_token')
 
 const apiRouter = express.Router()
 
@@ -146,6 +147,25 @@ apiRouter.post('/account/reset-password', async (req, res) => {
     } catch (error) {
         res.status(500).json("internal_error")
         console.error(error)
+    }
+})
+
+apiRouter.get('/account/info', async (req, res) => {
+    const access_token = req.query.access_token + ""
+    if(!access_token) {
+        res.status(400).json("bad_request")
+        return
+    }
+    try {
+        const accessTokenObj = await AccessToken.findOne({ access_token })
+        if(accessTokenObj) {
+            const user = await findUser(accessTokenObj.username, process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
+            res.json(user)
+        } else {
+            res.status(403).json("forbidden")
+        }
+    } catch (error) {
+        res.status(500).json("internal_error")
     }
 })
 
