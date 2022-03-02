@@ -181,6 +181,7 @@ apiRouter.get('/account/all_users', async (req, res) => {
         const accessTokenObj = await AccessToken.findOne({ access_token })
         if (accessTokenObj) {
             const users = await findUsers(process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
+            console.log(users)
             const safe_users = []
             for (const u of users) {
                 safe_users.push({
@@ -194,6 +195,7 @@ apiRouter.get('/account/all_users', async (req, res) => {
             res.status(403).json("forbidden")
         }
     } catch (error) {
+        console.error(error)
         res.status(500).json("internal_error")
     }
 })
