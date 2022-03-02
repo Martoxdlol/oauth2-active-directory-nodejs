@@ -10,13 +10,13 @@ function findUsers(LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
         })
 
         client.bind(LDAP_BIND_DN, LDAP_BIND_PW, err => {
-            if(err) reject(err)
+            if (err) reject(err)
         })
 
         // Search AD for user
         const searchOptions = {
             scope: "sub",
-            // filter: ``
+            filter: `(sAMAccountName=*)`
         }
 
         client.search(BASE_DN, searchOptions, (err, res) => {
@@ -29,10 +29,10 @@ function findUsers(LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
             })
             res.on('error', err => {
                 // console.error('error: ' + err.message)
-                if(err) reject(err)
+                if (err) reject(err)
             })
             res.on('end', result => {
-                if(!resolved) resolve(null)
+                if (!resolved) resolve(null)
                 // console.log(result)
                 // resolve(result)
             })
