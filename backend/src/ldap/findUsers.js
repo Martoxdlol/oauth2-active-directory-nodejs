@@ -16,7 +16,7 @@ function findUsers(LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
         // Search AD for user
         const searchOptions = {
             scope: "sub",
-            filter: ``
+            // filter: ``
         }
 
         client.search(BASE_DN, searchOptions, (err, res) => {
