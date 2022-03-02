@@ -9,6 +9,7 @@ const validator = require("email-validator")
 const modifyPassword = require('../ldap/modifyPassword')
 const findUser = require('../ldap/findUser')
 const AccessToken = require('../models/access_token')
+const findUsers = require('../ldap/findUsers')
 
 const apiRouter = express.Router()
 
@@ -152,15 +153,43 @@ apiRouter.post('/account/reset-password', async (req, res) => {
 
 apiRouter.get('/account/info', async (req, res) => {
     const access_token = req.query.access_token + ""
-    if(!access_token) {
+    if (!access_token) {
         res.status(400).json("bad_request")
         return
     }
     try {
         const accessTokenObj = await AccessToken.findOne({ access_token })
-        if(accessTokenObj) {
+        if (accessTokenObj) {
             const user = await findUser(accessTokenObj.username, process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
+            user.username = user.sAMAccountName
             res.json(user)
+        } else {
+            res.status(403).json("forbidden")
+        }
+    } catch (error) {
+        res.status(500).json("internal_error")
+    }
+})
+
+apiRouter.get('/account/all_users', async (req, res) => {
+    const access_token = req.query.access_token + ""
+    if (!access_token) {
+        res.status(400).json("bad_request")
+        return
+    }
+    try {
+        const accessTokenObj = await AccessToken.findOne({ access_token })
+        if (accessTokenObj) {
+            const users = await findUsers(process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
+            const safe_users = []
+            for (const u of users) {
+                safe_users.push({
+                    displayName: u.displayName,
+                    username: u.sAMAccountName,
+                    name: u.name
+                })
+            }
+            res.json(safe_users)
         } else {
             res.status(403).json("forbidden")
         }
