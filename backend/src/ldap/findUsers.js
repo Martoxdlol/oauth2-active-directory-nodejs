@@ -1,6 +1,6 @@
 const ldap = require('ldapjs');
 
-function findUsers(LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
+function findUsers(filter, LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
     let resolved = false
     return new Promise((resolve, reject) => {
 
@@ -16,13 +16,13 @@ function findUsers(LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
         // Search AD for user
         const searchOptions = {
             scope: "sub",
-            filter: `(sAMAccountName=*)`
+            filter: (filter !== undefined || filter !== null) ? filter : `(sAMAccountName=*)`
         }
 
         client.search(BASE_DN, searchOptions, (err, res) => {
+            let entries = []
             res.on('searchEntry', entry => {
-                resolved = true
-                resolve(entry.object)
+                entries.push(entry.object)
             })
             res.on('searchReference', referral => {
                 // console.log('referral: ' + referral.uris.join())
@@ -32,7 +32,7 @@ function findUsers(LDAP_SERVER_HOST, BASE_DN, LDAP_BIND_DN, LDAP_BIND_PW) {
                 if (err) reject(err)
             })
             res.on('end', result => {
-                if (!resolved) resolve(null)
+                resolve(entries)
                 // console.log(result)
                 // resolve(result)
             })

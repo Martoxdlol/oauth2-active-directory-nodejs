@@ -180,8 +180,7 @@ apiRouter.get('/account/all_users', async (req, res) => {
     try {
         const accessTokenObj = await AccessToken.findOne({ access_token })
         if (accessTokenObj) {
-            const users = await findUsers(process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
-            console.log(users)
+            const users = await findUsers('(sAMAccountName=*)', process.env.LDAP_SERVER_HOST, process.env.LDAP_SEARCH_BASE_DN, process.env.LDAP_BIND_DN, process.env.LDAP_BIND_PW)
             const safe_users = []
             for (const u of users) {
                 safe_users.push({
