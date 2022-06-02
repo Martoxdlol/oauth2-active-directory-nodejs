@@ -117,7 +117,8 @@ oauth2Router.post('/login/api/login', async (req, res) => {
             u.searchParams.set("code", code)
             res.json(u.toString())
         } else {
-            res.status(402).json("unauthorized")
+            console.log(err)
+            res.status(401).json("unauthorized")
         }
     } catch (error) {
         console.error(error)
@@ -145,7 +146,7 @@ oauth2Router.post('/login/access_token', async (req, res) => {
             throw 2
         }
         if (accessToken.redirect_uri != redirect_uri) {
-            throw 3
+            // throw 3
         }
         const client = await Oauth2Client.findById(accessToken.client)
         if (!client) {

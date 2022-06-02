@@ -38,9 +38,9 @@ class LoginAttempt {
                 }
             }
             // redirect_uri must be on client config
-            if (!redirect_uris.has(this.redirect_uri)) {
-                throw 403
-            }
+            // if (!redirect_uris.has(this.redirect_uri)) {
+            //     throw 403
+            // }
         } catch (e) {
             return false
         }
