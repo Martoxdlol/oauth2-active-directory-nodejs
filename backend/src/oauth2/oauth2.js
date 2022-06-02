@@ -108,6 +108,7 @@ oauth2Router.post('/login/api/login', async (req, res) => {
 
             // Save redirect_uri
             const r_uri = req.session.login_attempt.redirect_uri
+            const state = req.session.login_attempt.state
 
             // Delete login attempt
             req.session.login_attempt = null
@@ -115,6 +116,7 @@ oauth2Router.post('/login/api/login', async (req, res) => {
             // location.href = redirect_uri?code=code
             const u = new URL(r_uri)
             u.searchParams.set("code", code)
+            u.searchParams.set("code", state)
             res.json(u.toString())
         } else {
             console.log(err)
