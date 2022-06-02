@@ -30,13 +30,13 @@ class LoginAttempt {
                 }
             }
             // IF is requering more access than max allowed it will fail
-            if (this.scope.length) {
-                for (const scope_item of this.scope) {
-                    if (!max_scope.has(scope_item)) {
-                        throw 403
-                    }
-                }
-            }
+            // if (this.scope.length) {
+            //     for (const scope_item of this.scope) {
+            //         if (!max_scope.has(scope_item)) {
+            //             throw 403
+            //         }
+            //     }
+            // }
             // redirect_uri must be on client config
             // if (!redirect_uris.has(this.redirect_uri)) {
             //     throw 403
