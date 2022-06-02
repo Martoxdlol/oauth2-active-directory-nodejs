@@ -116,7 +116,7 @@ oauth2Router.post('/login/api/login', async (req, res) => {
             // location.href = redirect_uri?code=code
             const u = new URL(r_uri)
             u.searchParams.set("code", code)
-            u.searchParams.set("code", state)
+            u.searchParams.set("state", state)
             res.json(u.toString())
         } else {
             console.log(err)
